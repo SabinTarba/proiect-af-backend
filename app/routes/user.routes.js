@@ -4,16 +4,6 @@ const User = require("../database/models/User");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-    const users = await User.findAll({
-        attributes: {
-            exclude: ["password"]
-        }
-    });
-
-    res.status(200).json(users);
-})
-
 router.get("/:id", async (req, res) => {
     const id = req.params.id;
 
@@ -23,7 +13,7 @@ router.get("/:id", async (req, res) => {
 
     const user = await User.findByPk(id, {
         attributes: {
-            exclude: ["password"]
+            exclude: ["password", "id"]
         }
     });
 
@@ -70,6 +60,8 @@ router.delete("/:id", async (req, res) => {
     }
 
     await user.destroy();
+
+    // TO DO: to implement deletion of user's orders (or archive them before actually delete them)
 
     res.status(200).json({ data: {} });
 })
