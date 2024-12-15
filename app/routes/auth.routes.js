@@ -107,7 +107,7 @@ router.post("/register", async (req, res) => {
     delete user.dataValues.password;
     delete user.dataValues.id;
 
-    res.status(201).json({ data: user });
+    res.status(201).json({ data: { user: user } });
 })
 
 module.exports = router;

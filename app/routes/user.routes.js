@@ -1,6 +1,6 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const User = require("../database/models/User");
+const Order = require('../database/models/Order');
 
 const router = express.Router();
 
@@ -9,6 +9,10 @@ router.get("/:id", async (req, res) => {
 
     if (!isNaN(id)) {
         return res.status(400).json({ errorMessage: "User ID is not valid!" })
+    }
+
+    if (id !== req.userId) {
+        return res.status(400).json({ errorMessage: "User ID missmatch!" })
     }
 
     const user = await User.findByPk(id, {
@@ -21,7 +25,7 @@ router.get("/:id", async (req, res) => {
         return res.status(400).json({ errorMessage: "User not found!" })
     }
 
-    res.status(200).json({success: true, data: user})
+    res.status(200).json({ data: user })
 })
 
 router.put("/:id", async (req, res) => {
@@ -29,6 +33,10 @@ router.put("/:id", async (req, res) => {
 
     if (!isNaN(id)) {
         return res.status(400).json({ errorMessage: "User ID is not valid!" })
+    }
+
+    if (id !== req.userId) {
+        return res.status(400).json({ errorMessage: "User ID missmatch!" })
     }
 
     const user = await User.findByPk(id);
@@ -53,15 +61,19 @@ router.delete("/:id", async (req, res) => {
         return res.status(400).json({ errorMessage: "User ID is not valid!" })
     }
 
+    if (id !== req.userId) {
+        return res.status(400).json({ errorMessage: "User ID missmatch!" })
+    }
+
     const user = await User.findByPk(id);
 
     if (!user) {
         return res.status(400).json({ errorMessage: "User not found!" })
     }
 
-    await user.destroy();
+    await Order.destroy({ where: { userId: user.id } });
 
-    // TO DO: to implement deletion of user's orders (or archive them before actually delete them)
+    await user.destroy();
 
     res.status(200).json({ data: {} });
 })

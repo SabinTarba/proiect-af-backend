@@ -1,5 +1,6 @@
 const { sequelize } = require("../sqlite/server");
 const { DataTypes } = require('sequelize');
+const Order = require("./Order");
 
 const User = sequelize.define('User', {
     id: {
@@ -29,5 +30,7 @@ const User = sequelize.define('User', {
         require: true
     },
 })
+
+User.hasMany(Order, { foreignKey: "userId", as: "orders" });
 
 module.exports = User;
